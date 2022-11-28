@@ -1,13 +1,7 @@
-import { useEffect, useState } from "react";
-import * as Location from "expo-location";
-import { FontAwesome5 } from "@expo/vector-icons";
-import {
-  StyledDriving,
-  MainText,
-  StyledButton,
-  TitleText,
-  Paragraph,
-} from "./styles";
+import { useEffect, useState } from 'react';
+import * as Location from 'expo-location';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { StyledDriving, MainText, StyledButton, TitleText, Paragraph } from './styles';
 
 /**
  * navigation을 받아서 페이지 이동에 사용한다.
@@ -36,18 +30,15 @@ const Driving = ({ navigation, route }) => {
   const getDistance = async (address, coordinate) => {
     if (!address) return;
     try {
-      const res = await fetch(
-        `https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${address}&coordinate=${coordinate}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-NCP-APIGW-API-KEY-ID": "0bjwb04qag",
-            "X-NCP-APIGW-API-KEY": "y9lQ5yVHnNgjtvqYckY2uG2LI8RgaSW7MaEv0T6I",
-          },
-        }
-      ).then((res) => res.json());
+      const res = await fetch(`https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${address}&coordinate=${coordinate}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-NCP-APIGW-API-KEY-ID': 'APPKEY',
+          'X-NCP-APIGW-API-KEY': 'APPKEY',
+        },
+      }).then((res) => res.json());
       setDistance(res.addresses[0].distance);
       return res.addresses[0].distance;
     } catch (e) {
@@ -59,13 +50,13 @@ const Driving = ({ navigation, route }) => {
   const refreshBusLocation = async (routeId) => {
     try {
       await fetch(`https://inside-ssafy.com/api/v1/buses/arrive/${routeId}`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
       }).then((res) => {
-        console.log("버스 위치 최신화", res.status);
+        console.log('버스 위치 최신화', res.status);
         setCurrentRouteId(routeId);
         setRefreshStatus(res.status);
         return res.status;
@@ -81,14 +72,14 @@ const Driving = ({ navigation, route }) => {
     const data = { number: busNumber };
     try {
       await fetch(`https://www.inside-ssafy.com/api/v1/buses/end`, {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       }).then((res) => {
-        console.log("버스 운행 종료", res.status);
+        console.log('버스 운행 종료', res.status);
         return res.status;
       });
     } catch (e) {
@@ -98,8 +89,8 @@ const Driving = ({ navigation, route }) => {
 
   const DrivingDoneAndMovePage = () => {
     patchDrivingDone(busNumber);
-    alert("운행이 종료되었습니다.");
-    navigation.navigate("Main");
+    alert('운행이 종료되었습니다.');
+    navigation.navigate('Main');
   };
 
   useEffect(() => {
@@ -113,8 +104,8 @@ const Driving = ({ navigation, route }) => {
     (async () => {
       // 유저에게 위치 권한 허용 여부 묻기
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
         return;
       }
 
@@ -133,17 +124,14 @@ const Driving = ({ navigation, route }) => {
       );
 
       // 도착지와 유저의 거리 받기
-      getDistance(
-        busLine[busIdx]?.address,
-        `${currentLocation.longitude},${currentLocation.latitude}`
-      );
+      getDistance(busLine[busIdx]?.address, `${currentLocation.longitude},${currentLocation.latitude}`);
 
       if (distance <= 50) {
         refreshBusLocation(busLine[busIdx].routeId);
         setBusIdx((prev) => prev + 1);
       }
 
-      console.log("거리", distance);
+      console.log('거리', distance);
     })();
   }, [currentLocation.latitude]);
 
@@ -155,11 +143,7 @@ const Driving = ({ navigation, route }) => {
       </MainText>
       <Paragraph>{`거리 = ${distance}`}</Paragraph>
       <Paragraph>{`주소 = ${busLine[busIdx]?.address}`}</Paragraph>
-      {refreshStatus === 200 ? (
-        <Paragraph>{`${busIdx + 1}번째 목적지에 도착했습니다`}</Paragraph>
-      ) : (
-        ""
-      )}
+      {refreshStatus === 200 ? <Paragraph>{`${busIdx + 1}번째 목적지에 도착했습니다`}</Paragraph> : ''}
       <StyledButton onPress={() => DrivingDoneAndMovePage()}>
         <TitleText>운행종료</TitleText>
       </StyledButton>
